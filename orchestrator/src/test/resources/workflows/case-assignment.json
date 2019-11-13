@@ -1,134 +1,128 @@
 {
   "name": "call-center",
-  "trigger-defs": [
+  "eventTriggers": [
     {
       "name": "create",
       "source": "/callcenter",
       "type": "org.kogito.examples.callcenter.create"
     },
     {
-      "name": "resolved",
+      "name": "resolve",
       "source": "/callcenter",
       "type": "org.kogito.examples.callcenter.resolve",
-      "correlation-token": "$.id"
+      "correlationToken": "$.id"
     },
     {
-      "name": "escalated",
+      "name": "escalate",
       "source": "/callcenter",
       "type": "org.kogito.examples.callcenter.escalate",
-      "correlation-token": "$.id"
+      "correlationToken": "$.id"
     },
     {
-      "name": "escalation-resolved",
+      "name": "resolve-escalation",
       "source": "/callcenter",
       "type": "org.kogito.examples.callcenter.resolve-escalation",
-      "correlation-token": "$.id"
+      "correlationToken": "$.id"
     }
   ],
-  "starts-at": "created",
+  "startAt": "created",
   "states": [
     {
       "name": "created",
       "type": "EVENT",
       "events": [
         {
-          "event-expression": {
-            "path": "$.name",
-            "value": "create",
-            "operator": "Equals"
-          },
-          "next-state": "open"
+          "event": "create",
+          "nextState": "open"
         }
       ]
     },
     {
       "name": "open",
       "type": "OPERATION",
-      "action-mode": "SEQUENTIAL",
+      "actionMode": "SEQUENTIAL",
       "filter": {
-        "input-path": "$.subject",
-        "result-path": "$",
-        "output-path": "$.assignee"
+        "inputPath": "$.subject",
+        "resultPath": "$",
+        "outputPath": "$.assignee"
       },
       "actions": [
         {
           "function": {
             "name": "find-candidate",
             "type": "aws",
-            "parameters": [
-              {
-                "name": "resource",
-                "value": "arn:aws:lambda:REGION:ACCOUNT_ID:function:search-candidate"
-              }
-            ]
+            "parameters": {
+              "name": "arn:aws:lambda:REGION:ACCOUNT_ID:function:search-candidate"
+            }
           }
         }
       ],
-      "next-state": "assigned"
+      "nextState": "assigned"
     },
     {
       "name": "assigned",
       "type": "EVENT",
       "events": [
         {
-          "event-expression": {
-            "path": "$.name",
-            "value": "resolve",
-            "operator": "Equals"
-          },
-          "next-state": "closed",
+          "event": "resolve",
+          "nextState": "closed",
           "timeout": {
             "period": "P1D",
-            "then": "escalated"
+            "then": "manage-escalation"
           }
         },
         {
-          "event-expression": {
-            "path": "$.name",
-            "value": "escalate",
-            "operator": "Equals"
-          },
-          "next-state": "escalated"
+          "event": "escalate",
+          "nextState": "manage-escalation"
         }
       ]
+    },
+    {
+      "name": "manage-escalation",
+      "type": "OPERATION",
+      "filter": {
+        "inputPath": "$.subject",
+        "resultPath": "$",
+        "outputPath": "$.escalationManager"
+      },
+      "actionMode": "SEQUENTIAL",
+      "actions": [
+        {
+          "function": {
+            "name": "find-escalation-manager",
+            "type": "aws",
+            "parameters": {
+              "function": "arn:aws:lambda:REGION:ACCOUNT_ID:function:search-escalation-manager"
+            }
+          }
+        }
+      ],
+      "nextState": "escalated"
     },
     {
       "name": "escalated",
       "type": "EVENT",
       "events": [
         {
-          "event-expression": {
-            "path": "$.name",
-            "value": "resolve-escalation",
-            "operator": "Equals"
-          }
+          "event": "resolve-escalation",
+          "nextState": "closed"
         }
-      ],
-      "next-state": "closed"
+      ]
     },
     {
       "name": "closed",
       "type": "OPERATION",
-      "action-mode": "SEQUENTIAL",
+      "actionMode": "SEQUENTIAL",
       "actions": [
         {
           "function": {
             "name": "notify-resolution",
             "type": "notification",
-            "parameters": [
-              {
-                "name": "recipient",
-                "path": "$.requester"
-              },
-              {
-                "name": "caseNumber",
-                "path": "$.id"
-              },
-              {
-                "name": "resolution",
-                "path": "$.resolution"
-              }
-            ]
+            "parameters": {
+              "recipient": "$.requester",
+              "caseNumber": "$.id",
+              "resolution": "$.resolution"
+            }
           }
         }
       ],

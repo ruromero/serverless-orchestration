@@ -1,1 +1,1 @@
-com.redhat.syseng.serverless.cloudevents.serialization.CloudEventV3MessageProvider
+com.redhat.syseng.serverless.cloudevents.serialization.CloudEventV1MessageProvider

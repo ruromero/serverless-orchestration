@@ -55,10 +55,14 @@ public class KubernetesWorkflowServiceImpl implements WorkflowService {
         Config config = new ConfigBuilder().withNamespace(namespace).build();
         client = new DefaultKubernetesClient(config);
         LOGGER.debug("Watching for ConfigMaps changes");
-        client.configMaps()
-            .inNamespace(client.getNamespace())
-            .withLabel(CONFIGMAP_SELECTOR_KEY, workflowName)
-            .watch(new ConfigMapWatcher());
+        try {
+            client.configMaps()
+                .inNamespace(client.getNamespace())
+                .withLabel(CONFIGMAP_SELECTOR_KEY, workflowName)
+                .watch(new ConfigMapWatcher());
+        } catch (Exception e) {
+            LOGGER.error("Unable to watch configMaps", e);
+        }
     }
 
     @Override
@@ -84,7 +88,7 @@ public class KubernetesWorkflowServiceImpl implements WorkflowService {
 
     @Override
     public List<EventMatch> getEventMatches(URI source, String type, Optional<JsonObject> data) {
-        return getLatest().getTriggerDefs()
+        return getLatest().getEventTriggers()
             .stream()
             .filter(t ->
                         matchesValue(t.getSource(), source.toString()) &&

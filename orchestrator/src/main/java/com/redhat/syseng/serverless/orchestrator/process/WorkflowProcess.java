@@ -6,7 +6,6 @@ import org.kie.kogito.Model;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.serverless.workflow.api.Workflow;
-import org.serverless.workflow.api.events.TriggerEvent;
 
 public class WorkflowProcess extends AbstractProcess<Message> {
 

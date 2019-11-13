@@ -9,7 +9,6 @@ import javax.json.JsonObject;
 import com.redhat.syseng.serverless.orchestrator.model.EventMatch;
 import com.redhat.syseng.serverless.orchestrator.process.WorkflowListener;
 import org.serverless.workflow.api.Workflow;
-import org.serverless.workflow.api.events.TriggerEvent;
 
 public interface WorkflowService {
 

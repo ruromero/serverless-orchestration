@@ -1,28 +1,11 @@
 [
   {
-    "name": "org.apache.commons.logging.impl.LogFactoryImpl",
+    "name": "com.redhat.syseng.serverless.cloudevents.serialization.CloudEventV1MessageProvider",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
     "allPublicMethods": true,
     "allDeclaredFields": true,
     "allPublicFields": true
-  },
-  {
-    "name": "org.apache.commons.logging.LogFactory",
-    "allDeclaredConstructors": true,
-    "allPublicConstructors": true,
-    "allDeclaredMethods": true,
-    "allPublicMethods": true,
-    "allDeclaredFields": true,
-    "allPublicFields": true
-  },
-  {
-    "name": "org.apache.commons.logging.impl.SimpleLog",
-    "allDeclaredConstructors": true,
-    "allPublicConstructors": true,
-    "allDeclaredMethods": true,
-    "allPublicMethods": true,
-    "allDeclaredFields": true
   }
 ]
